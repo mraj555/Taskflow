@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../providers/task_provider.dart';
 import '../widgets/task_tile.dart';
 import 'add_edit_task_screen.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../../categories/screens/category_management_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -22,6 +24,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('TaskFlow'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.category),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const CategoryManagementScreen(),
+                ),
+              );
+            },
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(120),
           child: Column(
@@ -115,16 +130,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             itemCount: filteredTasks.length,
             itemBuilder: (context, index) {
               final task = filteredTasks[index];
-              return TaskTile(
-                task: task,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => AddEditTaskScreen(task: task),
-                    ),
-                  );
-                },
+              return Hero(
+                tag: task.id,
+                child: Material(
+                  color: Colors.transparent,
+                  child: TaskTile(
+                    task: task,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AddEditTaskScreen(task: task),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ).animate().fade(duration: 300.ms).slideX(
+                begin: 0.1,
+                end: 0,
+                delay: Duration(milliseconds: 50 * index),
               );
             },
           );
